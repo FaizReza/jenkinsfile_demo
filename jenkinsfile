@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    // Current server : available Servers where we will run the pipeline
+    tools {
+        maven 'mymaven'
+    }
+    stages {
+        stage ('1. Clone code') {
+            steps {
+            // branch:'master' url:'https://github.com/FaizReza/DevOpsCodeDemo'
+            // we will use pipeline syntex generator to produce aboe line
+            // pipeline syntex is a automa
+            git 'https://github.com/FaizReza/DevOpsCodeDemo'
+            }
+        }
+        stage('2. Review Code'){
+            steps {
+            sh 'mvn pmd:pmd'
+            }
+        }
+        stage('3. Compile Code') {
+            steps {
+            sh 'mvn compile'
+            }
+        }
+        stage('4. Test Code'){
+            steps {
+            sh 'mvn test'
+                }
+        }
+        stage('5. Package Code'){
+            steps {
+            sh 'mvn package'
+            }
+        }
+    }
+      post {
+    success {
+      echo 'Pipeline succeeded!'
+    }
+    failure {
+      echo 'Pipeline failed.'
+    }
+  }
+}
