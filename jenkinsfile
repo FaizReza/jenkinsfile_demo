@@ -36,7 +36,8 @@ pipeline {
     }
       post {
     success {
-      echo 'Pipeline succeeded!'
+      //echo 'Pipeline succeeded!'
+      recordIssues sourceCodeRetention: 'LAST_BUILD', tools: [pmdParser(pattern: '**/pmd.xml')]
     }
     failure {
       echo 'Pipeline failed.'
