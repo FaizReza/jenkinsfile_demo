@@ -1,0 +1,63 @@
+# .github/workflows/ci-cd-pipeline.yml
+name: CI/CD Pipeline from External Repo
+
+on:
+  # Trigger on push to main branch
+  push:
+    branches: [ master, develop ]
+  # Trigger on pull requests
+  pull_request:
+    branches: [ master ]
+  # Manual trigger from UI
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout THIS repository (contains the workflow)
+      - name: Checkout workflow repo
+        uses: actions/checkout@v4
+        
+      # Step 2: Clone the external source code repository
+      - name: Clone external source code
+        run: |
+          git clone https://github.com/FaizReza/DevOpsCodeDemo source-code
+          cd source-code
+          git checkout main
+        # Or use authentication if private repo:
+        # env:
+        #   GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        # run: |
+        #   git clone https://$GH_TOKEN@github.com/other-org/source-repo.git source-code
+        
+      # Step 3: Set up Java (Maven requirement)
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'  # or '17', '21'
+          distribution: 'temurin'
+          
+      # Step 4: Build with Maven
+      - name: Build with Maven
+        run: |
+          cd source-code
+          mvn clean package -DskipTests
+          
+      # Step 5: Run Tests
+      - name: Run Tests
+        run: |
+          cd source-code
+          mvn test
+          
+      # Step 6: Optional - Upload artifacts
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: build-artifacts
+          path: |
+            source-code/target/*.jar
+            source-code/target/*.war
+          retention-days: 7
