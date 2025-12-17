@@ -25,7 +25,7 @@ jobs:
         run: |
           git clone https://github.com/FaizReza/DevOpsCodeDemo source-code
           cd source-code
-          git checkout main
+          git checkout master
         # Or use authentication if private repo:
         # env:
         #   GH_TOKEN: ${{ secrets.GH_TOKEN }}
